@@ -27,7 +27,8 @@
     "check:drift": "node scripts/check-drift.mjs",
     "sync:abis": "node scripts/sync-abis.mjs",
     "smoke": "node dist/cli.js --version && node dist/cli.js status --json",
-    "prepublishOnly": "npm run build && npm run test && npm run check:drift"
+    "prepublishOnly": "npm run build && npm run test && npm run check:drift",
+    "e2e": "node scripts/e2e.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.3",

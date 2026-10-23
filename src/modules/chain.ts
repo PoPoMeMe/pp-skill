@@ -288,12 +288,17 @@ export async function faucetClaim(ctx: Ctx, opts: { domainChainId?: boolean } = 
   const { chain, signer } = ctx
   const address = signer.offchainAddress
   const timestampMs = Date.now()
+  // MetaMask Agent Wallet refuses a typed-data request whose domain has no
+  // chainId ("requires typedData.domain.chainId to match chainId"), so the mm
+  // path always signs the chain-scoped variant. The faucet edge function accepts
+  // it explicitly via domainChainId; legacy Privy callers keep the chainless one.
+  const withChainId = opts.domainChainId ?? signer.kind === "mm"
   const input: AuthInput = {
     action: "testnet-faucet-claim",
     address,
     timestampMs,
     payload: { chainId: chain.chainId },
-    ...(opts.domainChainId ? { domainChainId: chain.chainId } : {}),
+    ...(withChainId ? { domainChainId: chain.chainId } : {}),
   }
   const signature = await signer.signTypedData(authTypedData(input), {
     intent: `PoPo faucet claim on ${chain.label}`,
@@ -310,7 +315,7 @@ export async function faucetClaim(ctx: Ctx, opts: { domainChainId?: boolean } = 
     address,
     timestampMs,
     signature,
-    ...(opts.domainChainId ? { domainChainId: chain.chainId } : {}),
+    ...(withChainId ? { domainChainId: chain.chainId } : {}),
   })
   return {
     ok: true,
@@ -329,12 +334,14 @@ export async function faucetStatus(ctx: Ctx) {
   const { chain, signer } = ctx
   const address = signer.offchainAddress
   const timestampMs = Date.now()
+  const withChainId = signer.kind === "mm"
   const signature = await signer.signTypedData(
     authTypedData({
       action: "testnet-faucet-claim",
       address,
       timestampMs,
       payload: { chainId: chain.chainId },
+      ...(withChainId ? { domainChainId: chain.chainId } : {}),
     }),
     { intent: "PoPo faucet status" },
   )
@@ -343,6 +350,7 @@ export async function faucetStatus(ctx: Ctx) {
     address,
     timestampMs,
     signature,
+    ...(withChainId ? { domainChainId: chain.chainId } : {}),
     action: "status",
   })
 }

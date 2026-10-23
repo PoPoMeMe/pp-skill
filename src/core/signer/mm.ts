@@ -221,7 +221,10 @@ export async function createMmSigner(options: MmSignerOptions): Promise<Signer> 
     },
 
     async signTypedData(data: TypedDataInput, opts: { intent?: string } = {}) {
-      const payload = JSON.stringify(data)
+      // EIP-712 messages carry uint256 values as BigInt here; mm takes JSON.
+      const payload = JSON.stringify(data, (_key, value) =>
+        typeof value === "bigint" ? value.toString() : value,
+      )
       const result = await mmJson<unknown>(
         [
           "wallet",
@@ -239,10 +242,13 @@ export async function createMmSigner(options: MmSignerOptions): Promise<Signer> 
         { timeoutMs: 660_000 },
       )
       const bag = result as Record<string, unknown>
-      const nested = (bag.result ?? bag.signature ?? bag) as Record<string, unknown>
+      const nested = (
+        typeof bag.result === "object" && bag.result !== null ? bag.result : bag
+      ) as Record<string, unknown>
       const signature =
-        (nested.signature as string | undefined) ??
-        (nested.signatureHex as string | undefined) ??
+        (typeof bag.signature === "string" ? bag.signature : undefined) ??
+        (typeof nested.signature === "string" ? nested.signature : undefined) ??
+        (typeof nested.signatureHex === "string" ? nested.signatureHex : undefined) ??
         (typeof result === "string" ? result : undefined)
       if (!signature || !/^0x[0-9a-fA-F]{130}$/.test(signature)) {
         throw new PopoError("signer_unavailable", "mm did not return a signature", {
