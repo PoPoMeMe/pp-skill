@@ -10,6 +10,7 @@
 import { Command, Option } from "commander"
 import { PopoError, formatP, parseP, shortAddr, type Address } from "../core/base"
 import { getChain, listChains, type ChainConfig } from "../core/chains"
+import { VERSION } from "../core/version"
 import { readConfig, writeConfig, type SignerKind } from "../core/config"
 import { resolveSigner } from "../core/signer"
 import {
@@ -79,7 +80,7 @@ const program = new Command()
 program
   .name("popo")
   .description("PoPo.meme for AI harnesses — hatch tokens, AMM, episodes, prediction, beans")
-  .version("0.1.0")
+  .version(VERSION)
   .option("--chain <id|key>", "chain id or key (421614 | 46630)")
   .option("--json", "machine-readable JSON output")
   .option("--signer <kind>", "auto | mm | zerodev | local | readonly")

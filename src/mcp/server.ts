@@ -17,6 +17,7 @@ import { PopoError, formatP } from "./../core/base"
 import type { Address } from "./../core/base"
 import { getChain, listChains } from "../core/chains"
 import { readConfig } from "../core/config"
+import { VERSION } from "../core/version"
 import { resolveSigner } from "../core/signer"
 import { probeZeroDev, sessionStatus } from "../core/signer/zerodev"
 import { chainHealth } from "../core/rpc"
@@ -142,7 +143,7 @@ async function writeTool(ctx: Ctx, build: () => Promise<WritePlan>, confirm?: bo
 
 const server = new McpServer({
   name: "popo",
-  version: "0.1.0",
+  version: VERSION,
 })
 
 const READ = { readOnlyHint: true, openWorldHint: true, idempotentHint: true }
