@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.1.1 — 2026-10-23
+
+First real on-chain transaction, plus the runner that covers the rest.
+
+### Fixed
+
+* **mm typed data rejected without `domain.chainId`** — MetaMask Agent Wallet
+  answers `SIGNATURE_REQUEST_INVALID_PAYLOAD: "eth_signTypedData_v4 requires
+  typedData.domain.chainId to match chainId"`. The faucet path now signs the
+  chain-scoped PoPoAuth variant and forwards `domainChainId`, which the faucet
+  Edge Function already validates.
+* **`signTypedData` result parsing** — mm returns a flat
+  `{ mode, address, status, signature }`; the parser only looked at nested shapes
+  and discarded a good signature.
+* **BigInt in EIP-712 messages** — `JSON.stringify` had no replacer, so any
+  uint256 field (the auth timestamp) crashed the write path.
+
+### Added
+
+* `npm run e2e` (`scripts/e2e.mjs`) — drives the installed CLI through
+  status → faucet → vault deposit → hatch create → buy → sell → curve state →
+  AMM quote → predict list/quote → episode list/unlock/watch → Beans check-in.
+  Gas precheck first, dry-run gate per step, JSON report at the end, `--yes` to
+  broadcast.
+* `docs/scope.md` §5 is the acceptance list this runner implements.
+
+### Verified on Arbitrum Sepolia (421614)
+
+| step | result |
+|---|---|
+| `popo status` | signer `mm`, address `0xb81f…c88d` |
+| `popo faucet` (PoPoAuth, real edge function) | 1,000,000 testnet $P minted, tx `0xfaf3244b…b0c4` |
+| `popo vault deposit` onwards | blocked — the signer address has no native gas yet |
+
 ## 0.1.0 — 2026-10-23
 
 First public release. Two chains, four surfaces, one core.

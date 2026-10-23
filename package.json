@@ -1,6 +1,6 @@
 {
   "name": "popo-skill",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "PoPo.meme as an agent tool: interactive CLI, MCP server and Agent Skill for AI harnesses (Arbitrum Sepolia + Robinhood Chain testnets).",
   "license": "MIT",
   "type": "module",
