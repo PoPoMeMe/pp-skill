@@ -1,0 +1,62 @@
+{
+  "name": "popo-skill",
+  "version": "0.1.0",
+  "description": "PoPo.meme as an agent tool: interactive CLI, MCP server and Agent Skill for AI harnesses (Arbitrum Sepolia + Robinhood Chain testnets).",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "popo": "dist/cli.js",
+    "popo-mcp": "dist/mcp.js"
+  },
+  "files": [
+    "dist",
+    "SKILL.md",
+    "references",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepare": "npm run build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:drift": "node scripts/check-drift.mjs",
+    "sync:abis": "node scripts/sync-abis.mjs",
+    "smoke": "node dist/cli.js --version && node dist/cli.js status --json",
+    "prepublishOnly": "npm run build && npm run test && npm run check:drift"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.3",
+    "commander": "^12.1.0",
+    "ink": "^5.2.1",
+    "react": "^18.3.1",
+    "viem": "^2.38.5",
+    "zod": "^3.25.76"
+  },
+  "optionalDependencies": {
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/permissions": "^5.5.6",
+    "@zerodev/sdk": "^5.5.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/react": "^18.3.20",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  },
+  "keywords": [
+    "popo",
+    "popo.meme",
+    "mcp",
+    "ai-agent",
+    "agent-skill",
+    "zerodev",
+    "arbitrum",
+    "robinhood-chain"
+  ]
+}

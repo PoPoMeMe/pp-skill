@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci || npm install
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests (EIP-712 parity, units, chain registry)
+        run: npm run test
+      - name: Build
+        run: npm run build
+      - name: CLI smoke
+        run: |
+          node dist/cli.js --version
+          node dist/cli.js chains --json
+          node dist/cli.js call --list --json > /dev/null
+      - name: Drift guard (ABIs + chain registry vs pp-all)
+        continue-on-error: true
+        run: npm run check:drift
